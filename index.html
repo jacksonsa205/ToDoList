@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kanban Board</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="kanban-container">
+    <h1>Quadro Kanban</h1>
+    <form id="task-form">
+      <input type="text" id="task-input" placeholder="Digite sua tarefa..." required>
+      <button type="submit">Adicionar</button>
+    </form>
+
+    <div class="kanban-board">
+      <!-- Coluna Pendente -->
+      <div class="kanban-column" id="pending">
+        <h2>Pendente</h2>
+        <ul class="task-list" id="pending-tasks"></ul>
+      </div>
+
+      <!-- Coluna Em Andamento -->
+      <div class="kanban-column" id="in-progress">
+        <h2>Em Andamento</h2>
+        <ul class="task-list" id="in-progress-tasks"></ul>
+      </div>
+
+      <!-- Coluna Concluído -->
+      <div class="kanban-column" id="completed">
+        <h2>Concluído</h2>
+        <ul class="task-list" id="completed-tasks"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
