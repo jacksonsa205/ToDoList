@@ -18,7 +18,7 @@ const saveTasksToLocalStorage = () => {
   const tasks = Array.from(document.querySelectorAll('.task-list li')).map(task => {
     return {
       text: task.querySelector('.task-text').textContent,
-      date: task.querySelector('.task-date').textContent.replace('Data conclusão: ', ''),
+      date: task.querySelector('.task-date').getAttribute('data-date'), // Salvar a data ISO
       observation: task.querySelector('.task-observation').textContent.replace('Obs: ', ''),
     };
   });
@@ -50,7 +50,7 @@ const openEditModal = (task, taskText, taskDate, taskObservation) => {
 
   // Preenchemos os campos do formulário com os valores da tarefa
   input.value = taskText;
-  dateInput.value = taskDate;
+  dateInput.value = taskDate; // Preenche o input de data com o formato ISO
   observationInput.value = taskObservation;
 
   form.querySelector('button').textContent = 'Salvar'; // Botão mostra "Salvar"
@@ -83,12 +83,12 @@ const createTask = (taskText, taskDate, taskObservation) => {
   textContainer.textContent = taskText;
   textContainer.className = 'task-text';
 
-  // Formatar a data para dd/mm/aaaa
+  // Formatar a data para exibição
   const formatDate = (dateString) => {
-    const date = new Date(dateString + 'T00:00:00Z'); 
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-    const year = date.getUTCFullYear();
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
 
@@ -96,6 +96,7 @@ const createTask = (taskText, taskDate, taskObservation) => {
   const dateContainer = document.createElement('span');
   dateContainer.textContent = `Data conclusão: ${formatDate(taskDate)}`;
   dateContainer.className = 'task-date';
+  dateContainer.setAttribute('data-date', taskDate); // Salva o formato ISO como atributo
 
   // Observação
   const observationContainer = document.createElement('p');
@@ -155,13 +156,14 @@ form.addEventListener('submit', (e) => {
   e.preventDefault();
 
   const taskText = input.value;
-  const taskDate = dateInput.value;
+  const taskDate = dateInput.value; // Captura o formato ISO
   const taskObservation = observationInput.value;
 
   if (isEditing && currentTask) {
     // Atualizar a tarefa existente
     currentTask.querySelector('.task-text').textContent = taskText;
-    currentTask.querySelector('.task-date').textContent = `Data conclusão: ${taskDate}`;
+    currentTask.querySelector('.task-date').textContent = `Data conclusão: ${formatDate(taskDate)}`;
+    currentTask.querySelector('.task-date').setAttribute('data-date', taskDate); // Atualiza o atributo ISO
     currentTask.querySelector('.task-observation').textContent = `Obs: ${taskObservation}`;
   } else {
     // Criar uma nova tarefa
