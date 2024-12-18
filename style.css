@@ -6,8 +6,9 @@
   }
   
   body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    font-family: 'Roboto', sans-serif;
+    background: url('imagens/imagem-fundo.png') no-repeat center center fixed;
+    background-size: cover; /* Ajusta a imagem para cobrir toda a tela */
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -29,28 +30,92 @@
   #task-form {
     margin-bottom: 20px;
     display: flex;
-    justify-content: center;
-    gap: 10px;
+    flex-wrap: wrap; /* Permite que os elementos quebrem a linha */
+    gap: 10px; /* Espaçamento entre os elementos */
+    justify-content: center; /* Centraliza os elementos horizontalmente */
   }
-  
-  #task-input {
+
+  #task-input, #task-date, #task-observation {
     padding: 10px;
-    width: 300px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 8px;
+    font-size: 16px;
   }
-  
+
+  #task-input {
+    width: 220px; /* Largura do input de título */
+    flex-shrink: 0; /* Evita que o tamanho seja alterado */
+  }
+
+  #task-date {
+    width: 150px; /* Largura do input de data */
+    flex-shrink: 0; /* Evita que o tamanho seja alterado */
+  }
+
+  .container-input {
+    display: flex; /* Ativa o Flexbox */
+    gap: 10px; /* Espaçamento entre os inputs */
+    justify-content: flex-start; /* Alinha os inputs à esquerda */
+    align-items: center; /* Garante alinhamento vertical */
+    margin-top: 20px;
+  }
+
+  /* Observação abaixo do título e data */
+  #task-observation {
+    width: 100%; /* Soma das larguras do título e da data */
+    resize: none; /* Desativa redimensionamento */
+    margin-top: 10px; /* Espaço acima do campo de observação */
+
+  }
+
   #task-form button {
     padding: 10px 15px;
     background-color: #007bff;
     color: white;
+    font-size: 18px;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
+    width: 410px; /* Mesmo tamanho do campo de observação */
+    margin-top: 10px; /* Espaço acima do botão */
   }
-  
+
   #task-form button:hover {
     background-color: #0056b3;
+  }
+
+  .title-quadro{
+    color: #fff;
+  }
+  .title-container{
+    background-color: #dc3545;
+    color: #fff;
+    justify-content: space-between;
+    align-items: center;
+    height: 40px;
+    padding-left: 5px;
+    padding-right: 5px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .title-pendente{
+    margin-top: 15px;
+  }
+  .title-andamento{
+    background-color: #ffc107;
+    color: #fff;
+    padding: 5px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .title-concluido{
+    background-color: #007bff;
+    color: #fff;
+    padding: 5px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
   
   /* Quadro Kanban */
@@ -62,10 +127,8 @@
   
   .kanban-column {
     flex: 1;
-    background-color: #fff;
+    background-color: transparent;
     padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     text-align: left;
   }
   
@@ -78,35 +141,149 @@
     min-height: 300px;
     padding: 0;
     margin: 0;
-    border: 2px dashed #ccc;
-    border-radius: 4px;
+    
   }
   
   .task-list li {
     background-color: #f9f9f9;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 15px;
     margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 4px;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    color: #606676;
     cursor: move;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Elementos alinhados na horizontal */
+    align-items: center; /* Alinha no topo */
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+
+  .task-list li:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+  }
+  
+  .task-content {
+    flex: 1; /* Ocupa o espaço disponível */
+    display: flex;
+    flex-direction: column; /* Alinha itens verticalmente */
+  }
+  
+  .task-text {
+    font-weight: bold; /* Negrito para o título */
+    font-size: 16px; /* Tamanho maior para o título */
+    color: #333; /* Cor escura para destaque */
+  }
+  
+  .task-observation {
+    font-size: 14px; /* Tamanho menor que o título */
+    color: #606676; /* Cor mais clara */
+    margin-top: 8px; /* Espaço acima da observação */
+  }
+  
+  .task-date {
+    font-size: 12px; /* Tamanho pequeno para a data */
+    color: #999; /* Cor ainda mais clara */
+    margin-top: 5px; /* Espaço acima da data */
+  }
+  
+  .task-icons {
+    display: flex;
+    flex-direction: column; /* Ícones em coluna */
+    gap: 10px; /* Espaçamento entre os ícones */
+    align-items: center; /* Alinha os ícones ao centro horizontalmente */
+    justify-content: center; /* Alinha os ícones ao centro verticalmente */
+  }
+  
+  .task-icons i {
+    cursor: pointer;
+  }
+  
+  .task-icons .edit {
+    color: #555;
+    font-size: 16px;
+  }
+  
+  .task-icons .edit:hover {
+    color: #333;
+  }
+  
+  .task-icons .delete {
+    color: #dc3545;
+    font-size: 16px;
+  }
+  
+  .task-icons .delete:hover {
+    color: #b71c1c; /* Vermelho mais escuro ao passar o mouse */
+  }
+
+  /* Ícone de adicionar */
+  .title-container {
+    display: flex;
     align-items: center;
+    gap: 10px; /* Espaçamento entre o título e o ícone */
   }
-  
-  .task-list li .edit {
-    margin-right: 10px;
-    background-color: #ffc107;
-    border: none;
-    padding: 5px;
-    border-radius: 4px;
+
+  .add-icon {
+    font-size: 25px;
+    color: #fff;
     cursor: pointer;
+    transition: transform 0.2s ease;
+    margin-right: 5px;
   }
-  
-  .task-list li .delete {
-    background-color: #dc3545;
-    border: none;
-    padding: 5px;
-    border-radius: 4px;
+
+  .add-icon:hover {
+    transform: scale(1.2);
+    color: #0056b3;
+  }
+
+  /* Modal */
+  .modal {
+    display: none; /* Escondido por padrão */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    width: 400px;
+    max-width: 90%;
+    position: relative;
+  }
+
+  .close-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
     cursor: pointer;
+    color: #999;
+    transition: color 0.2s ease;
   }
+
+  .close-modal:hover {
+    color: #333;
+  }
+
+  .title-modal{
+    color: #333;
+  }
+
+  
+  
   

@@ -1,30 +1,141 @@
 // Selecionar elementos
 const form = document.getElementById('task-form');
 const input = document.getElementById('task-input');
+const dateInput = document.getElementById('task-date');
+const observationInput = document.getElementById('task-observation');
 const columns = document.querySelectorAll('.task-list');
+const openModalButton = document.getElementById('open-modal');
+const closeModalButton = document.getElementById('close-modal');
+const taskModal = document.getElementById('task-modal');
+const modalTitle = document.querySelector('.title-modal'); // Seleciona o título do modal
+
+// Variável para rastrear se estamos adicionando ou editando uma tarefa
+let isEditing = false;
+let currentTask = null;
+
+// Função para salvar tarefas no LocalStorage
+const saveTasksToLocalStorage = () => {
+  const tasks = Array.from(document.querySelectorAll('.task-list li')).map(task => {
+    return {
+      text: task.querySelector('.task-text').textContent,
+      date: task.querySelector('.task-date').textContent.replace('Data conclusão: ', ''),
+      observation: task.querySelector('.task-observation').textContent.replace('Obs: ', ''),
+    };
+  });
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+};
+
+// Função para carregar tarefas do LocalStorage
+const loadTasksFromLocalStorage = () => {
+  const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+  tasks.forEach(({ text, date, observation }) => {
+    const task = createTask(text, date, observation);
+    document.getElementById('pending-tasks').appendChild(task);
+  });
+};
+
+// Abrir o modal para adicionar uma nova tarefa
+openModalButton.addEventListener('click', () => {
+  isEditing = false; // Indicamos que é uma nova tarefa
+  form.reset(); // Limpamos os campos do formulário
+  form.querySelector('button').textContent = 'Adicionar'; // Botão mostra "Adicionar"
+  modalTitle.textContent = 'Adicionar Tarefa'; // Título mostra "Adicionar Tarefa"
+  taskModal.style.display = 'flex'; // Mostramos o modal
+});
+
+// Abrir o modal para editar uma tarefa existente
+const openEditModal = (task, taskText, taskDate, taskObservation) => {
+  isEditing = true; // Indicamos que é uma edição
+  currentTask = task; // Armazenamos a tarefa que está sendo editada
+
+  // Preenchemos os campos do formulário com os valores da tarefa
+  input.value = taskText;
+  dateInput.value = taskDate;
+  observationInput.value = taskObservation;
+
+  form.querySelector('button').textContent = 'Salvar'; // Botão mostra "Salvar"
+  modalTitle.textContent = 'Editar Tarefa'; // Título mostra "Editar Tarefa"
+  taskModal.style.display = 'flex'; // Mostramos o modal
+};
+
+// Fechar o modal ao clicar no botão de fechar
+closeModalButton.addEventListener('click', () => {
+  taskModal.style.display = 'none'; // Escondemos o modal
+});
+
+// Fechar o modal ao clicar fora do conteúdo
+window.addEventListener('click', (event) => {
+  if (event.target === taskModal) {
+    taskModal.style.display = 'none';
+  }
+});
 
 // Função para criar uma nova tarefa
-const createTask = (taskText) => {
+const createTask = (taskText, taskDate, taskObservation) => {
   const task = document.createElement('li');
-  task.textContent = taskText;
+  
+  // Container para o conteúdo da tarefa
+  const contentContainer = document.createElement('div');
+  contentContainer.className = 'task-content';
 
-  // Botões de edição e exclusão
-  const editButton = document.createElement('button');
-  editButton.textContent = 'Editar';
-  editButton.className = 'edit';
-  editButton.addEventListener('click', () => {
-    const newText = prompt('Edite sua tarefa:', task.textContent);
-    if (newText) task.firstChild.textContent = newText;
+  // Nome da tarefa
+  const textContainer = document.createElement('span');
+  textContainer.textContent = taskText;
+  textContainer.className = 'task-text';
+
+  // Formatar a data para dd/mm/aaaa
+  const formatDate = (dateString) => {
+    const date = new Date(dateString + 'T00:00:00Z'); 
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const year = date.getUTCFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  // Criar o container de data com o formato correto
+  const dateContainer = document.createElement('span');
+  dateContainer.textContent = `Data conclusão: ${formatDate(taskDate)}`;
+  dateContainer.className = 'task-date';
+
+  // Observação
+  const observationContainer = document.createElement('p');
+  observationContainer.textContent = `Obs: ${taskObservation}`;
+  observationContainer.className = 'task-observation';
+
+  // Adicionar conteúdo ao container
+  contentContainer.appendChild(textContainer);
+  contentContainer.appendChild(observationContainer);
+  contentContainer.appendChild(dateContainer);
+
+  // Container para os ícones
+  const iconsContainer = document.createElement('div');
+  iconsContainer.className = 'task-icons';
+
+  // Ícone de edição
+  const editIcon = document.createElement('i');
+  editIcon.className = 'fas fa-pencil-alt edit';
+  editIcon.title = 'Editar';
+  editIcon.addEventListener('click', () => {
+    openEditModal(task, taskText, taskDate, taskObservation); // Abrimos o modal para edição
   });
 
-  const deleteButton = document.createElement('button');
-  deleteButton.textContent = 'Excluir';
-  deleteButton.className = 'delete';
-  deleteButton.addEventListener('click', () => task.remove());
+  // Ícone de exclusão
+  const deleteIcon = document.createElement('i');
+  deleteIcon.className = 'fas fa-trash delete';
+  deleteIcon.title = 'Excluir';
+  deleteIcon.addEventListener('click', () => {
+    task.remove();
+    saveTasksToLocalStorage(); // Atualizamos o LocalStorage ao excluir
+  });
 
-  // Adicionar botões e arrastar
-  task.appendChild(editButton);
-  task.appendChild(deleteButton);
+  // Adicionar ícones ao container
+  iconsContainer.appendChild(editIcon);
+  iconsContainer.appendChild(deleteIcon);
+
+  // Adicionar containers ao item da lista
+  task.appendChild(contentContainer);
+  task.appendChild(iconsContainer);
+
   task.draggable = true;
 
   // Evento de arrastar
@@ -39,12 +150,31 @@ const createTask = (taskText) => {
   return task;
 };
 
-// Evento de adicionar tarefa
+// Evento de submit no formulário (Adicionar ou Editar)
 form.addEventListener('submit', (e) => {
   e.preventDefault();
-  const task = createTask(input.value);
-  document.getElementById('pending-tasks').appendChild(task);
-  input.value = '';
+
+  const taskText = input.value;
+  const taskDate = dateInput.value;
+  const taskObservation = observationInput.value;
+
+  if (isEditing && currentTask) {
+    // Atualizar a tarefa existente
+    currentTask.querySelector('.task-text').textContent = taskText;
+    currentTask.querySelector('.task-date').textContent = `Data conclusão: ${taskDate}`;
+    currentTask.querySelector('.task-observation').textContent = `Obs: ${taskObservation}`;
+  } else {
+    // Criar uma nova tarefa
+    const task = createTask(taskText, taskDate, taskObservation);
+    document.getElementById('pending-tasks').appendChild(task);
+  }
+
+  // Salvar as tarefas no LocalStorage
+  saveTasksToLocalStorage();
+
+  // Fechar o modal e limpar os campos
+  taskModal.style.display = 'none';
+  form.reset();
 });
 
 // Evento para arrastar e soltar
@@ -53,5 +183,9 @@ columns.forEach((column) => {
     e.preventDefault();
     const draggingTask = document.querySelector('.dragging');
     column.appendChild(draggingTask);
+    saveTasksToLocalStorage(); // Atualizamos o LocalStorage ao arrastar
   });
 });
+
+// Carregar tarefas ao iniciar
+document.addEventListener('DOMContentLoaded', loadTasksFromLocalStorage);
