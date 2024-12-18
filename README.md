@@ -2,6 +2,10 @@
 
 Este é um projeto de **Kanban To-Do List** simples, onde você pode adicionar tarefas, movê-las entre as colunas "Pendente", "Em Andamento" e "Concluído", além de editar ou excluir tarefas.
 
+##
+<div>
+    <img height="400px" width="100%" src="imagens/captura_tela.jpeg"/>
+</div>
 ## Funcionalidades
 
 - **Adicionar Tarefa**: Adicione novas tarefas à coluna "Pendente".
