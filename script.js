@@ -20,6 +20,7 @@ const saveTasksToLocalStorage = () => {
       text: task.querySelector('.task-text').textContent,
       date: task.querySelector('.task-date').getAttribute('data-date'), // Salvar a data ISO
       observation: task.querySelector('.task-observation').textContent.replace('Obs: ', ''),
+      column: task.parentElement.id // Salva a coluna (ID da lista)
     };
   });
   localStorage.setItem('tasks', JSON.stringify(tasks));
@@ -28,9 +29,9 @@ const saveTasksToLocalStorage = () => {
 // Função para carregar tarefas do LocalStorage
 const loadTasksFromLocalStorage = () => {
   const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-  tasks.forEach(({ text, date, observation }) => {
+  tasks.forEach(({ text, date, observation, column }) => {
     const task = createTask(text, date, observation);
-    document.getElementById('pending-tasks').appendChild(task);
+    document.getElementById(column).appendChild(task); // Adiciona a tarefa à coluna correspondente
   });
 };
 
