@@ -7,16 +7,20 @@ const columns = document.querySelectorAll('.task-list');
 const openModalButton = document.getElementById('open-modal');
 const closeModalButton = document.getElementById('close-modal');
 const taskModal = document.getElementById('task-modal');
-const modalTitle = document.querySelector('.title-modal'); // Seleciona o título do modal
+const modalTitle = document.querySelector('.title-modal');
 
 // Variável para rastrear se estamos adicionando ou editando uma tarefa
 let isEditing = false;
-let currentTask = null;
+let currentTaskId = null;
+
+// Função para gerar IDs únicos
+const generateUniqueId = () => `task-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
 // Função para salvar tarefas no LocalStorage
 const saveTasksToLocalStorage = () => {
   const tasks = Array.from(document.querySelectorAll('.task-list li')).map(task => {
     return {
+      id: task.getAttribute('data-id'),
       text: task.querySelector('.task-text').textContent,
       date: task.querySelector('.task-date').getAttribute('data-date'), // Salvar a data ISO
       observation: task.querySelector('.task-observation').textContent.replace('Obs: ', ''),
@@ -29,8 +33,8 @@ const saveTasksToLocalStorage = () => {
 // Função para carregar tarefas do LocalStorage
 const loadTasksFromLocalStorage = () => {
   const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-  tasks.forEach(({ text, date, observation, column }) => {
-    const task = createTask(text, date, observation);
+  tasks.forEach(({ id, text, date, observation, column }) => {
+    const task = createTask(id, text, date, observation);
     document.getElementById(column).appendChild(task); // Adiciona a tarefa à coluna correspondente
   });
 };
@@ -38,6 +42,7 @@ const loadTasksFromLocalStorage = () => {
 // Abrir o modal para adicionar uma nova tarefa
 openModalButton.addEventListener('click', () => {
   isEditing = false; // Indicamos que é uma nova tarefa
+  currentTaskId = null; // Resetamos o ID atual
   form.reset(); // Limpamos os campos do formulário
   form.querySelector('button').textContent = 'Adicionar'; // Botão mostra "Adicionar"
   modalTitle.textContent = 'Adicionar Tarefa'; // Título mostra "Adicionar Tarefa"
@@ -45,9 +50,9 @@ openModalButton.addEventListener('click', () => {
 });
 
 // Abrir o modal para editar uma tarefa existente
-const openEditModal = (task, taskText, taskDate, taskObservation) => {
+const openEditModal = (taskId, taskText, taskDate, taskObservation) => {
   isEditing = true; // Indicamos que é uma edição
-  currentTask = task; // Armazenamos a tarefa que está sendo editada
+  currentTaskId = taskId; // Armazenamos o ID da tarefa que está sendo editada
 
   // Preenchemos os campos do formulário com os valores da tarefa
   input.value = taskText;
@@ -62,19 +67,22 @@ const openEditModal = (task, taskText, taskDate, taskObservation) => {
 // Fechar o modal ao clicar no botão de fechar
 closeModalButton.addEventListener('click', () => {
   taskModal.style.display = 'none'; // Escondemos o modal
+  form.reset(); // Limpamos o formulário ao fechar o modal
 });
 
 // Fechar o modal ao clicar fora do conteúdo
 window.addEventListener('click', (event) => {
   if (event.target === taskModal) {
     taskModal.style.display = 'none';
+    form.reset(); // Limpamos o formulário ao fechar o modal
   }
 });
 
 // Função para criar uma nova tarefa
-const createTask = (taskText, taskDate, taskObservation) => {
+const createTask = (id, taskText, taskDate, taskObservation) => {
   const task = document.createElement('li');
-  
+  task.setAttribute('data-id', id);
+
   // Container para o conteúdo da tarefa
   const contentContainer = document.createElement('div');
   contentContainer.className = 'task-content';
@@ -86,10 +94,7 @@ const createTask = (taskText, taskDate, taskObservation) => {
 
   // Formatar a data para exibição
   const formatDate = (dateString) => {
-    const date = new Date(dateString + 'T00:00:00Z'); 
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-    const year = date.getUTCFullYear();
+    const [year, month, day] = dateString.split('-');
     return `${day}/${month}/${year}`;
   };
 
@@ -118,7 +123,7 @@ const createTask = (taskText, taskDate, taskObservation) => {
   editIcon.className = 'fas fa-pencil-alt edit';
   editIcon.title = 'Editar';
   editIcon.addEventListener('click', () => {
-    openEditModal(task, taskText, taskDate, taskObservation); // Abrimos o modal para edição
+    openEditModal(id, textContainer.textContent, dateContainer.getAttribute('data-date'), observationContainer.textContent.replace('Obs: ', ''));
   });
 
   // Ícone de exclusão
@@ -156,28 +161,34 @@ const createTask = (taskText, taskDate, taskObservation) => {
 form.addEventListener('submit', (e) => {
   e.preventDefault();
 
-  const taskText = input.value;
-  const taskDate = dateInput.value; // Captura o formato ISO
-  const taskObservation = observationInput.value;
+  const taskText = input.value.trim();
+  const taskDate = dateInput.value;
+  const taskObservation = observationInput.value.trim();
 
-  if (isEditing && currentTask) {
-    // Atualizar a tarefa existente
-    currentTask.querySelector('.task-text').textContent = taskText;
-    currentTask.querySelector('.task-date').textContent = `Data conclusão: ${formatDate(taskDate)}`;
-    currentTask.querySelector('.task-date').setAttribute('data-date', taskDate); // Atualiza o atributo ISO
-    currentTask.querySelector('.task-observation').textContent = `Obs: ${taskObservation}`;
+  if (!taskText || !taskDate || !taskObservation) {
+    alert('Preencha todos os campos antes de salvar.');
+    return;
+  }
+
+  if (isEditing && currentTaskId) {
+    const currentTask = document.querySelector(`[data-id='${currentTaskId}']`);
+    if (currentTask) {
+      currentTask.querySelector('.task-text').textContent = taskText;
+      currentTask.querySelector('.task-date').textContent = `Data conclusão: ${taskDate.split('-').reverse().join('/')}`;
+      currentTask.querySelector('.task-date').setAttribute('data-date', taskDate);
+      currentTask.querySelector('.task-observation').textContent = `Obs: ${taskObservation}`;
+      isEditing = false; // Resetamos o modo de edição
+      currentTaskId = null; // Resetamos o ID atual
+    }
   } else {
-    // Criar uma nova tarefa
-    const task = createTask(taskText, taskDate, taskObservation);
+    const taskId = generateUniqueId();
+    const task = createTask(taskId, taskText, taskDate, taskObservation);
     document.getElementById('pending-tasks').appendChild(task);
   }
 
-  // Salvar as tarefas no LocalStorage
   saveTasksToLocalStorage();
-
-  // Fechar o modal e limpar os campos
   taskModal.style.display = 'none';
-  form.reset();
+  form.reset(); // Limpamos o formulário ao salvar
 });
 
 // Evento para arrastar e soltar

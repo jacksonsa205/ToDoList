@@ -33,3 +33,4 @@ kanban-todo-list/
 └── imagens/        # Pasta contendo imagens do projeto
     └── checklist.png
     └── captura_tela.jpge
+    └── checklist.png
