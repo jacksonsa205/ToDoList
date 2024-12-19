@@ -2,6 +2,10 @@
 
 Este é um projeto de **Kanban To-Do List** simples, onde você pode adicionar tarefas, movê-las entre as colunas "Pendente", "Em Andamento" e "Concluído", além de editar ou excluir tarefas.
 
+## Acesse o Aplicativo
+
+Você pode acessar o aplicativo publicado [aqui](https://todolist-production-71fc.up.railway.app/).
+
 ##
 <div>
     <img src="imagens/captura_tela.jpeg" style="width: 100%; height: auto;" alt="Captura de Tela">
