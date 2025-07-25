@@ -184,7 +184,7 @@ const exportToExcel = () => {
 
 // Função para mostrar linha do tempo (placeholder)
 const showTimeline = () => {
-  alert('Funcionalidade de linha do tempo será implementada em breve!');
+  window.location.href = 'timeline.html';
 };
 
 // Abrir o modal para adicionar uma nova tarefa

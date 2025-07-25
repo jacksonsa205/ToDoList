@@ -8,12 +8,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
   <div class="kanban-container">
     <div class="header-container">
-      <h1 class="title-quadro">Quadro Kanban</h1>
+      <h1 class="title-quadro"><i class="fas fa-tasks"></i> Quadro Kanban</h1>
       <div class="action-buttons">
         <button id="print-screen" class="action-btn" title="Capturar tela">
           <i class="fas fa-camera"></i> Capturar
@@ -31,7 +31,7 @@
       <!-- Coluna Pendente -->
       <div class="kanban-column" id="pending">
         <div class="title-container">
-          <h2 class="title-pendente"><i class="fas fa-clock"></i> Pendente</h2>
+          <h2 class="column-title"><i class="fas fa-clock"></i> Pendente</h2>
           <i class="fas fa-plus add-icon" id="open-modal"></i>
         </div>
         <ul class="task-list" id="pending-tasks"></ul>
@@ -57,7 +57,7 @@
       <!-- Coluna Em Andamento -->
       <div class="kanban-column" id="in-progress">
         <div class="title-container">
-          <h2 class="title-andamento"><i class="fas fa-spinner"></i> Em Andamento</h2>
+          <h2 class="column-title"><i class="fas fa-spinner"></i> Em Andamento</h2>
         </div>
         <ul class="task-list" id="in-progress-tasks"></ul>
       </div>
@@ -65,7 +65,7 @@
       <!-- Coluna Concluído -->
       <div class="kanban-column" id="completed">
         <div class="title-container">
-          <h2 class="title-concluido"><i class="fas fa-check-circle"></i> Concluído</h2>
+          <h2 class="column-title"><i class="fas fa-check-circle"></i> Concluído</h2>
         </div>
         <ul class="task-list" id="completed-tasks"></ul>
       </div>
@@ -74,6 +74,6 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="script.js"></script>
+  <script src="js/index.js"></script>
 </body>
 </html>
