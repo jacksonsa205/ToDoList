@@ -43,13 +43,77 @@
           <span class="close-modal" id="close-modal">&times;</span>
           <form id="task-form">
             <h2 class="title-modal">Adicionar Tarefa</h2>
-            <div class="container-input">
-              <input type="text" id="task-input" placeholder="Nome da tarefa..." required>
-              <input type="date" id="task-date" required>
-            </div>
-            <textarea id="task-observation" placeholder="Adicione uma observação..." rows="2"></textarea>
             
-            <button type="submit">Adicionar</button>
+            <div class="form-group">
+              <label for="task-input">Nome da Tarefa*</label>
+              <input type="text" id="task-input" placeholder="Digite o nome da tarefa..." required>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="task-date">Data de Conclusão*</label>
+                <input type="date" id="task-date" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="task-responsible">Responsável</label>
+                <select id="task-responsible">
+                  <option value="">Selecione...</option>
+                  <option value="JACKSON ALVES DE SA">JACKSON ALVES DE SA</option>
+                  <option value="EDUARDO CESAR PEREIRA FILHO">EDUARDO CESAR PEREIRA FILHO</option>
+                  <option value="ELISAMANDA PEREIRA DE SOUZA">ELISAMANDA PEREIRA DE SOUZA</option>
+                  <option value="MARCIA APARECIDA MIRANDA SANTOS">MARCIA APARECIDA MIRANDA SANTOS</option>
+                  <option value="MARIA CARVALHO LOPES MINGARELLI">MARIA CARVALHO LOPES MINGARELLI</option>
+                  <option value="RODRIGO FERNANDO BARBOSA">RODRIGO FERNANDO BARBOSA</option>
+                  <option value="VITOR RODRIGO CORREIA ARAUJO">VITOR RODRIGO CORREIA ARAUJO</option>
+                  <option value="YARA KEZIAN DA SILVA DIAS">YARA KEZIAN DA SILVA DIAS</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="task-priority">Prioridade</label>
+              <select id="task-priority">
+                <option value="low">Baixa</option>
+                <option value="medium" selected>Média</option>
+                <option value="high">Alta</option>
+                <option value="urgent">Urgente</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label>Tags</label>
+              <div class="tags-container" id="tags-container">
+                <!-- Tags serão adicionadas dinamicamente -->
+              </div>
+              <div class="tags-input-container">
+                <input type="text" id="task-tags-input" placeholder="Digite tags separadas por vírgula...">
+                <button type="button" id="add-tags-btn" class="small-btn">Adicionar</button>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="task-observation">Observações</label>
+              <textarea id="task-observation" placeholder="Adicione observações importantes..." rows="3"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label>Anexos</label>
+              <div class="attachments-container" id="attachments-container">
+                <p class="no-attachments">Nenhum arquivo anexado</p>
+              </div>
+              <div class="file-upload-container">
+                <label for="task-file-upload" class="file-upload-btn">
+                  <i class="fas fa-paperclip"></i> Anexar Arquivo
+                </label>
+                <input type="file" id="task-file-upload" multiple style="display: none;">
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <button type="button" id="cancel-task-btn" class="secondary-btn">Cancelar</button>
+              <button type="submit" id="save-task-btn">Salvar Tarefa</button>
+            </div>
           </form>
         </div>
       </div>
@@ -68,6 +132,16 @@
           <h2 class="column-title"><i class="fas fa-check-circle"></i> Concluído</h2>
         </div>
         <ul class="task-list" id="completed-tasks"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Detalhes da Tarefa -->
+  <div class="modal" id="detail-modal">
+    <div class="modal-content">
+      <span class="close-modal" id="close-detail-modal">&times;</span>
+      <div class="task-detail-content" id="task-detail-content">
+        <!-- Conteúdo será preenchido dinamicamente -->
       </div>
     </div>
   </div>
